@@ -1,0 +1,5 @@
+﻿buildozer==1.5.0
+Cython==0.29.36
+requests
+certifi
+kivy==2.3.1
