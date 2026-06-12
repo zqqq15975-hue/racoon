@@ -1,0 +1,73 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            git zip unzip openjdk-17-jdk \
+            autoconf automake libtool pkg-config \
+            zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6 \
+            cmake libffi-dev libssl-dev build-essential ccache \
+            gettext m4 libltdl-dev python3-venv python3-setuptools
+
+      - name: Install Buildozer
+        run: |
+          python -m pip install --upgrade pip setuptools wheel virtualenv
+          python -m pip install "Cython==0.29.36" "buildozer==1.5.0"
+          buildozer --version
+
+      - name: Show project files
+        run: |
+          pwd
+          ls -la
+          echo "---- buildozer.spec ----"
+          sed -n '1,220p' buildozer.spec
+          echo "---- main.py exists ----"
+          test -f main.py
+
+      - name: Build APK
+        run: |
+          buildozer -v android debug
+
+      - name: Upload APK artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dhrpowerball-apk
+          path: bin/*.apk
+          if-no-files-found: error
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-failure-logs
+          path: |
+            .buildozer/**/*.log
+            .buildozer/**/*.txt
+            buildozer.spec
+          if-no-files-found: warn

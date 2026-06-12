@@ -1,0 +1,4 @@
+kivy==2.3.1
+requests
+certifi
+pyjnius

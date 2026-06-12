@@ -1,0 +1,15 @@
+GitHub Actions로 APK 빌드하는 방법
+
+1. https://github.com 접속 후 로그인
+2. New repository 클릭
+3. 저장소 이름 입력 예: dhrpowerball-apk-build
+4. Public 또는 Private 선택 후 Create repository
+5. 이 프로젝트 폴더 안의 모든 파일(main.py, buildozer.spec, .github 폴더 포함)을 업로드
+6. 저장소 상단 Actions 탭 클릭
+7. Build Android APK 워크플로 선택
+8. Run workflow 클릭
+9. 빌드 완료 후 Artifacts에서 dhrpowerball-apk 다운로드
+
+주의:
+- Windows PowerShell에서 buildozer -v android debug를 실행하지 마세요.
+- 이 방식은 GitHub의 Ubuntu 서버에서 APK를 빌드하므로 WSL 오류 6801을 우회할 수 있습니다.
